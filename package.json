@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "mongodb": "^6.3.0",
+    "promise": "^8.3.0",
     "sirv-cli": "^2.0.0"
   }
 }

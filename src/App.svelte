@@ -1,30 +1,40 @@
+<!-- App.svelte -->
 <script>
-	export let name;
+  // Récupération du composant
+  import PokeList from './components/PokeList.svelte'
+let pokemons = []
+  // On initialise la variable qui va contenir le Pokémon choisi
+  let selectedPokemon = null
+
+  const promise = getPokemons();
+
+  async function getPokemons() {
+    const res = await fetch('https://pokeapi.co/api/v2/pokemon');
+    const json = await res.json();
+
+    return json.results;
+  }
+   const handlePokemonSelect = (event) => {
+      // Les données spécifique envoyé dans l'évènement seront
+      // dans la propriété `detail`
+      selectedPokemon = event.detail
+    }
 </script>
 
-<main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
-</main>
+<h1>Pokédex</h1>
+{#await promise}
+  Chargement du Pokédex...
+{:then pokemons}
+  <PokeList pokemons={pokemons} on:selectPokemon={selectPokemon}  />
 
-<style>
-	main {
-		text-align: center;
-		padding: 1em;
-		max-width: 240px;
-		margin: 0 auto;
-	}
+<!-- Si on a séléctionné un Pokémon, on peut afficher notre composant -->
+  {#if selectedPokemon}
+    <PokeDetails pokemon={selectedPokemon} />
+<!-- Sinon, une indication -->
+  {:else}
+    Sélectionnez un Pokémon
+  {/if}
+{:catch error}
+  Une erreur s'est produite : {error.message}
+{/await}
 
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
-
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
-	}
-</style>
